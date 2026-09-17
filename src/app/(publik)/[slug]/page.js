@@ -1,4 +1,4 @@
-import { db } from '../../lib/db.js';
+import { db } from '@/app/lib/db.js';
 import React from 'react';
 // Kita panggil komponen Client khusus pop-up yang kita rakit di bawah
 import ListArtikelDenganPopUp from './ListArtikelDenganPopUp';
