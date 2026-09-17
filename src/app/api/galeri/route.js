@@ -1,16 +1,5 @@
-// src/app/api/galeri/route.js
 import { NextResponse } from "next/server";
-import mysql from "mysql2/promise";
-import fs from "fs/promises";
-import path from "path";
-
-// 1. KONEKSI KE DATABASE MYSQL LO (Sesuaikan isinya dengan database lo ya!)
-const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "db_yayasan", 
-};
+import { db } from "@/app/lib/db";
 
 // 2. [GET] - API UNTUK MENGAMBIL DAFTAR FOTO KELUAR
 export async function GET(request) {
