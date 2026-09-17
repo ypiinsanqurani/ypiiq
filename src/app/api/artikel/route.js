@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../lib/db.js';
+import { db } from '@/app/lib/db.js';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
