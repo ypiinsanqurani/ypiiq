@@ -1,4 +1,4 @@
-import { db } from '../../lib/db.js';
+import { db } from '@/app/lib/db.js';
 import React from 'react';
 import Link from 'next/link';
 
