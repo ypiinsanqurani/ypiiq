@@ -1,28 +1,35 @@
 import { NextResponse } from 'next/server';
-import{ db } from '../../lib/db.js'; 
+import { db } from '@/app/lib/db';
 
 export async function POST(request) {
   try {
     const { username, password } = await request.json();
 
-    // Cek username & password di database
+    // Validasi input kosong
+    if (!username || !password) {
+      return NextResponse.json(
+        { success: false, message: 'Username dan password wajib diisi!' },
+        { status: 400 }
+      );
+    }
+
+    // Query ke database
     const [rows] = await db.query(
       'SELECT role_lembaga, nama_admin FROM admin WHERE username = ? AND password = ?',
       [username, password]
     );
 
-    const resultData = Array.isArray(rows) ? rows : [rows];
-
-    if (!resultData || resultData.length === 0) {
+    // Cek apakah data ditemukan
+    if (!rows || rows.length === 0) {
       return NextResponse.json(
         { success: false, message: 'Akun tidak terdaftar atau password salah!' },
         { status: 401 }
       );
     }
 
-    const user = resultData[0];
+    const user = rows[0];
 
-    // Mengembalikan data sukses tanpa cookie
+    // Return response sukses
     return NextResponse.json({
       success: true,
       role: user.role_lembaga,
@@ -30,6 +37,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
+    console.error('API Login Error:', error);
     return NextResponse.json(
       { success: false, message: 'Terjadi kesalahan pada database!' },
       { status: 500 }
