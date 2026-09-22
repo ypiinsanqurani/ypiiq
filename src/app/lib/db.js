@@ -1,3 +1,4 @@
+
 import mysql from 'mysql2/promise';
 
 export const db = mysql.createPool({
@@ -7,7 +8,9 @@ export const db = mysql.createPool({
   database: process.env.DB_DATABASE,
   port: Number(process.env.DB_PORT) || 4000,
   ssl: {
-    minVersion: 'TLSv1.2',
-    rejectUnauthorized: true,
+    rejectUnauthorized: true, 
   },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
