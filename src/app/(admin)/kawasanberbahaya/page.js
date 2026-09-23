@@ -66,7 +66,7 @@ export default function HalamanLoginAdmin() {
               type="text" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
-              placeholder="Ustad Atta Ganteng" 
+              placeholder="Contoh : Ustad Atta Ganteng" 
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-indigo-500 transition-all" 
               required 
             />
