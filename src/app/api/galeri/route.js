@@ -13,7 +13,7 @@ export async function GET(request) {
 
     // Kalau diakses dari admin lembaga tertentu (bukan super admin 'all')
     if (slug && slug !== "all") {
-      query = "SELECT * FROM tabel_galeri WHERE slug_lembaga = ? ORDER BY id DESC";
+      query = "SELECT * FROM table_galeri WHERE slug_lembaga = ? ORDER BY id DESC";
       values = [slug];
     }
 
