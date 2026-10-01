@@ -8,7 +8,7 @@ export async function GET(request) {
     const slug = searchParams.get("slug"); // Menangkap ?slug=sd atau ?slug=all
 
     const connection = await mysql.createConnection(dbConfig);
-    let query = "SELECT * FROM tabel_galeri ORDER BY id DESC";
+    let query = "SELECT * FROM table_galeri ORDER BY id DESC";
     let values = [];
 
     // Kalau diakses dari admin lembaga tertentu (bukan super admin 'all')
@@ -63,7 +63,7 @@ export async function POST(request) {
 
       // --- SIMPAN DATA KE MYSQL ---
       const connection = await mysql.createConnection(dbConfig);
-      const queryInsert = "INSERT INTO tabel_galeri (slug_lembaga, caption, url_gambar) VALUES (?, ?, ?)";
+      const queryInsert = "INSERT INTO table_galeri (slug_lembaga, caption, url_gambar) VALUES (?, ?, ?)";
       await connection.execute(queryInsert, [slugLembaga, caption, urlGambarFinal]);
       await connection.end();
 
@@ -90,14 +90,14 @@ export async function DELETE(request) {
     const connection = await mysql.createConnection(dbConfig);
     
     // [Opsional] Ambil dulu path gambarnya kalau lo mau hapus file fisiknya di folder uploads
-    const [foto] = await connection.execute("SELECT url_gambar FROM tabel_galeri WHERE id = ?", [id]);
+    const [foto] = await connection.execute("SELECT url_gambar FROM table_galeri WHERE id = ?", [id]);
     if (foto.length > 0) {
       const pathFileFisik = path.join(process.cwd(), "public", foto[0].url_gambar);
       await fs.unlink(pathFileFisik).catch(() => console.log("File fisik gak ketemu, lewati hapus folder"));
     }
 
     // Hapus baris data di database
-    await connection.execute("DELETE FROM tabel_galeri WHERE id = ?", [id]);
+    await connection.execute("DELETE FROM table_galeri WHERE id = ?", [id]);
     await connection.end();
 
     return NextResponse.json({ pesan: "Foto berhasil dihapus!" }, { status: 200 });
