@@ -1,17 +1,27 @@
 import { NextResponse } from "next/server";
-import { db } from "@/app/lib/db";
+import mysql from "mysql2/promise";
+import { del } from "@vercel/blob"; // Opsional: untuk hapus file di Vercel Blob
 
-// 2. [GET] - API UNTUK MENGAMBIL DAFTAR FOTO KELUAR
+// Konfigurasi koneksi TiDB / MySQL lo
+const dbConfig = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 4000,
+  ssl: { rejectUnauthorized: true } // Wajib untuk TiDB Cloud
+};
+
+// 1. [GET] - API UNTUK MENGAMBIL DAFTAR FOTO GALERI
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug"); // Menangkap ?slug=sd atau ?slug=all
+    const slug = searchParams.get("slug");
 
     const connection = await mysql.createConnection(dbConfig);
     let query = "SELECT * FROM table_galeri ORDER BY id DESC";
     let values = [];
 
-    // Kalau diakses dari admin lembaga tertentu (bukan super admin 'all')
     if (slug && slug !== "all") {
       query = "SELECT * FROM table_galeri WHERE slug_lembaga = ? ORDER BY id DESC";
       values = [slug];
@@ -27,44 +37,21 @@ export async function GET(request) {
   }
 }
 
-// 3. [POST] - API UNTUK PROSES UPLOAD GAMBAR DAN SIMPAN DATABASE
+// 2. [POST] - API UNTUK MENYIMPAN URL VERCEL BLOB KE DATABASE TiDB
 export async function POST(request) {
   try {
-    const formData = await request.formData();
-    const aksi = formData.get("aksi");
+    const body = await request.json();
+    const { aksi, slug_lembaga, caption, url_gambar } = body;
 
     if (aksi === "simpan_galeri") {
-      const slugLembaga = formData.get("slug_lembaga");
-      const caption = formData.get("caption");
-      const file = formData.get("image"); // Menangkap file gambar komputer
-
-      if (!file) {
-        return NextResponse.json({ pesan: "File foto tidak ditemukan" }, { status: 400 });
+      if (!url_gambar) {
+        return NextResponse.json({ pesan: "URL gambar tidak ditemukan" }, { status: 400 });
       }
 
-      // --- PROSES SIMPAN FILE KE FOLDER 'public/uploads/' ---
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Bikin nama file unik biar gak bentrok (Contoh: 171829382-foto.jpg)
-      const namaFileUnik = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-      
-      // Tentukan folder penyimpanan di project Next.js lo
-      const direktoriUpload = path.join(process.cwd(), "public", "uploads");
-      
-      // Jaga-jaga kalau folder 'uploads' belum dibikin, otomatis dibuat sistem
-      await fs.mkdir(direktoriUpload, { recursive: true });
-      
-      const pathLengkap = path.join(direktoriUpload, namaFileUnik);
-      await fs.writeFile(pathLengkap, buffer);
-
-      // Link URL gambar yang bakal disimpan ke MySQL (bisa diakses publik lewat web)
-      const urlGambarFinal = `/uploads/${namaFileUnik}`;
-
-      // --- SIMPAN DATA KE MYSQL ---
+      // Simpan data ke TiDB MySQL
       const connection = await mysql.createConnection(dbConfig);
       const queryInsert = "INSERT INTO table_galeri (slug_lembaga, caption, url_gambar) VALUES (?, ?, ?)";
-      await connection.execute(queryInsert, [slugLembaga, caption, urlGambarFinal]);
+      await connection.execute(queryInsert, [slug_lembaga, caption, url_gambar]);
       await connection.end();
 
       return NextResponse.json({ pesan: "Berhasil menyimpan galeri!" }, { status: 201 });
@@ -73,15 +60,15 @@ export async function POST(request) {
     return NextResponse.json({ pesan: "Aksi tidak dikenali" }, { status: 400 });
   } catch (error) {
     console.error("API POST Galeri Error:", error);
-    return NextResponse.json({ pesan: "Gagal memproses upload galeri" }, { status: 500 });
+    return NextResponse.json({ pesan: "Gagal memproses simpan galeri" }, { status: 500 });
   }
 }
 
-// 4. [DELETE] - API UNTUK MENGHAPUS FOTO
+// 3. [DELETE] - API UNTUK MENGHAPUS FOTO DARI DATABASE & VERCEL BLOB
 export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id"); // Menangkap ?id=5
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json({ pesan: "ID tidak valid" }, { status: 400 });
@@ -89,14 +76,19 @@ export async function DELETE(request) {
 
     const connection = await mysql.createConnection(dbConfig);
     
-    // [Opsional] Ambil dulu path gambarnya kalau lo mau hapus file fisiknya di folder uploads
+    // Ambil URL gambar dulu dari database sebelum barisnya dihapus
     const [foto] = await connection.execute("SELECT url_gambar FROM table_galeri WHERE id = ?", [id]);
-    if (foto.length > 0) {
-      const pathFileFisik = path.join(process.cwd(), "public", foto[0].url_gambar);
-      await fs.unlink(pathFileFisik).catch(() => console.log("File fisik gak ketemu, lewati hapus folder"));
+    
+    if (foto.length > 0 && foto[0].url_gambar) {
+      try {
+        // Hapus file dari Vercel Blob Storage biar gak nyampah
+        await del(foto[0].url_gambar);
+      } catch (blobErr) {
+        console.log("Gagal hapus file di Vercel Blob, lanjut hapus DB:", blobErr);
+      }
     }
 
-    // Hapus baris data di database
+    // Hapus data dari tabel TiDB
     await connection.execute("DELETE FROM table_galeri WHERE id = ?", [id]);
     await connection.end();
 
