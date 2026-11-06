@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db.js';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 
 // -----------------------------------------------------------------
 // 1. AMBIL DAFTAR ARTIKEL UNTUK TABEL ADMIN (Berdasarkan Role/Slug)
@@ -14,7 +12,6 @@ export async function GET(request) {
     let query = 'SELECT id, slug_lembaga, judul, tanggal FROM table_artikel';
     let params = [];
 
-    // Kalau rolenya bukan 'all' (misal cuma 'sd'), saring biar gak ngintip sekolah lain
     if (slug && slug !== 'all') {
       query += ' WHERE slug_lembaga = ?';
       params.push(slug.toLowerCase());
@@ -28,49 +25,31 @@ export async function GET(request) {
   }
 }
 
+// -----------------------------------------------------------------
+// 2. SIMPAN ARTIKEL BARU (Menerima JSON dari Client)
+// -----------------------------------------------------------------
 export async function POST(request) {
   try {
-    const formData = await request.formData();
-    const aksi = formData.get('aksi');
+    const body = await request.json();
+    const { slug_lembaga, judul, isi_artikel, gambar_url } = body;
 
-    // UPLOAD GAMBAR LOKAL
-    if (aksi === 'upload_gambar') {
-      const file = formData.get('image');
-      if (!file) return NextResponse.json({ error: 'File ketiup angin!' }, { status: 400 });
-
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const namaFileUnik = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-      const folderTujuan = join(process.cwd(), 'public', 'uploads');
-      await mkdir(folderTujuan, { recursive: true });
-      await writeFile(join(folderTujuan, namaFileUnik), buffer);
-
-      return NextResponse.json({ url: `/uploads/${namaFileUnik}` });
+    if (!slug_lembaga || !judul || !isi_artikel) {
+      return NextResponse.json({ error: 'Data kurang lengkap, Ustadz!' }, { status: 400 });
     }
 
-    // SIMPAN ARTIKEL BARU
-    if (aksi === 'simpan_artikel') {
-      const slug_lembaga = formData.get('slug_lembaga');
-      const judul = formData.get('judul');
-      const isi_artikel = formData.get('isi_artikel');
+    await db.query(
+      'INSERT INTO table_artikel (slug_lembaga, judul, isi_artikel, gambar_url) VALUES (?, ?, ?, ?)',
+      [slug_lembaga.toLowerCase(), judul, isi_artikel, gambar_url || null]
+    );
 
-      if (!slug_lembaga || !judul || !isi_artikel) {
-        return NextResponse.json({ error: 'Data kurang lengkap, Ustadz!' }, { status: 400 });
-      }
-
-      await db.query(
-        'INSERT INTO table_artikel (slug_lembaga, judul, isi_artikel) VALUES (?, ?, ?)',
-        [slug_lembaga.toLowerCase(), judul, isi_artikel]
-      );
-      return NextResponse.json({ success: true });
-    }
+    return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 // -----------------------------------------------------------------
-// 2. HAPUS ARTIKEL DARI DATABASE (DELETE)
+// 3. HAPUS ARTIKEL DARI DATABASE (DELETE)
 // -----------------------------------------------------------------
 export async function DELETE(request) {
   try {
