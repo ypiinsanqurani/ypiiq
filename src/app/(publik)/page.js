@@ -44,7 +44,7 @@ export default function HalamanPortalYayasan() {
       warnaLinear: "bg-linear-to-br from-rose-500/90 to-orange-500/95 text-white shadow-rose-500/20",
       warnaAksen: "border-rose-200/40 bg-rose-500/10 text-rose-400",
       warnaGlow: "group-hover:shadow-[0_0_40px_rgba(244,63,94,0.25)]",
-      deskripsi: "Pendidikan dasar unggulan berbasis teknologi informasi terintegrasi nilai Al-Qur'an.",
+      deskripsi: "Pendidikan dasar unggulan berbasis agama dan terintegrasi nilai Al-Qur'an.",
       fallbackLogo: "gambar/logo-sd.jpg"
     },
     {
@@ -53,15 +53,15 @@ export default function HalamanPortalYayasan() {
       warnaLinear: "bg-linear-to-br from-emerald-500/90 to-teal-600/95 text-white shadow-emerald-500/20",
       warnaAksen: "border-emerald-200/40 bg-emerald-500/10 text-emerald-400",
       warnaGlow: "group-hover:shadow-[0_0_40px_rgba(16,185,129,0.25)]",
-      deskripsi: "Mencetak generasi penghafal Al-Qur'an yang kompeten, kompetitif, dan menguasai sains.",
+      deskripsi: "Mencetak generasi penghafal Al-Qur'an yang kompeten, kompetitif, dan menguasai berbagai bidang.",
       fallbackLogo: "gambar/logo-smp.jpg"
     }
   ];
 
   const statsYayasan = [
     { angka: "150+", label: "Total Siswa Aktif" },
-    { angka: "20+", label: "Ustadz & Murabbi" },
-    { angka: "45+", label: "Prestasi Tingkat Kota/Nasional" },
+    { angka: "20+", label: "Ustadz & ustadzah" },
+    { angka: "45+", label: "Prestasi Tingkat Kota" },
     { angka: "3", label: "Lembaga Terintegrasi" }
   ];
 
@@ -101,7 +101,7 @@ export default function HalamanPortalYayasan() {
         </h1>
         <div className="w-32 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 mx-auto mt-6 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
         <p className="text-slate-400 mt-5 max-w-xl mx-auto text-sm md:text-base leading-relaxed font-medium opacity-90">
-          Selamat datang di ekosistem informasi digital terpadu. Silakan pilih gerbang lembaga pendidikan Anda di bawah ini.
+          Selamat datang di yayasan  kita tercinta. Silakan melihat lihat informasi tentang lembaga kita di bawah ini.
         </p>
       </header>
 
