@@ -8,7 +8,7 @@ export async function POST(request) {
     // Validasi input kosong
     if (!username || !password) {
       return NextResponse.json(
-        { success: false, message: 'Username dan password wajib diisi!' },
+        { success: false, message: 'Username dan password nya yo di isi sek noo sayangku cintaa!' },
         { status: 400 }
       );
     }
@@ -22,7 +22,7 @@ export async function POST(request) {
     // Cek apakah data ditemukan
     if (!rows || rows.length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Akun tidak terdaftar atau password salah!' },
+        { success: false, message: 'Kaaannnn,, domongi jo ngawur kok!' },
         { status: 401 }
       );
     }
