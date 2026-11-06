@@ -107,7 +107,7 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">Berita & Artikel</h3>
               <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                Pusat kendali artikel. Di sini Ustadz bisa nyari data lama, ngedit typo, hapus berita, atau bikin artikel multi-media baru.
+                Pusat kendali artikel. Di sini Ustadz/Ustadzah bisa nyari data lama, ngedit typo, hapus berita, atau bikin artikel multi-media baru.
               </p>
             </div>
             <div className="text-xs font-black text-indigo-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
