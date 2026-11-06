@@ -23,7 +23,7 @@ export default function HalamanLoginAdmin() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setPesanError(data.message || "Gagal Login!");
+        setPesanError(data.message || "Kaaannn, domongi jo ngawur kok!");
         setIsLoading(false);
         return;
       }
@@ -50,7 +50,7 @@ export default function HalamanLoginAdmin() {
             <span className="text-3xl">🔐</span>
           </div>
           <h2 className="text-2xl font-black text-white tracking-wide uppercase">Pusat Kendali</h2>
-          <p className="text-slate-400 text-xs mt-1.5 font-medium">Masukan kredensial akun admin kamu.</p>
+          <p className="text-slate-400 text-xs mt-1.5 font-medium">Jo ngawur lek nglebokno jeneng kambek sandi e, Mbledos ki engko lek ngawur..!!.</p>
         </div>
 
         {pesanError && (
@@ -66,7 +66,7 @@ export default function HalamanLoginAdmin() {
               type="text" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
-              placeholder="Contoh : Ustad Atta Ganteng" 
+              placeholder="Contoh : Atta Ganteng Poollll" 
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3.5 text-sm text-white outline-none focus:border-indigo-500 transition-all" 
               required 
             />
@@ -89,7 +89,7 @@ export default function HalamanLoginAdmin() {
             disabled={isLoading}
             className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-xs font-bold uppercase tracking-wider py-4 rounded-xl shadow-lg mt-2 cursor-pointer hover:opacity-90 transition disabled:opacity-50"
           >
-            {isLoading ? "Memeriksa DB..." : "Monggo Mlebet →"}
+            {isLoading ? "sek di cek..." : "Monggo Mlebet →"}
           </button>
         </form>
 
