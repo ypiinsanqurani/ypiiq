@@ -26,9 +26,9 @@ export const dataSejarahLembaga = {
     ]
   },
   smp: {
-    judul: "Tentang SMPIT",
+    judul: "Tentang SMPTIQ",
     subJudul: "Bukan Sekadar Hafal Al-Qur'an, Tapi Juga Berkarakter dan Terampil Beraksi! Di SMP Tahfidz Insan Qur’ani , bakat ananda akan dikembangkan secara maksimal. Kami percaya setiap anak memiliki potensi emas!",
-    ringkasan: "SMPIT merupakan kelanjutan estafet dakwah pendidikan lanjutan tingkat menengah yang berfokus mempersiapkan mental kepemimpinan tangguh, penguasaan sains, serta bahasa asing.",
+    ringkasan: "SMPTIQ merupakan kelanjutan estafet dakwah pendidikan lanjutan tingkat menengah yang berfokus mempersiapkan mental kepemimpinan tangguh, penguasaan sains, serta bahasa asing.",
     milestones: [
       { tahun: "Program Unggulan", peristiwa: "Tahfidz dan Tahsin Al Quran" },
       { tahun: "Program Unggulan", peristiwa: "Dauroh Arabic English" },
