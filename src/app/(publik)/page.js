@@ -74,12 +74,10 @@ export default function HalamanPortalYayasan() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col justify-between relative overflow-hidden font-sans text-slate-100 selection:bg-indigo-500 selection:text-white">
       
-      {/* 1. EFEK GRID PATTERN & NEON BLUR BACKGROUND */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-60"></div>
-      
-      <div className="absolute top-[-10%] left-[15%] w-[40vw] h-[40vw] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute top-[30%] right-[15%] w-[35vw] h-[35vw] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[10%] left-[10%] w-[30vw] h-[30vw] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* 1. NEON BLUR BACKGROUND (TANPA KOTAK-KOTAK) */}
+      <div className="absolute top-[-5%] left-[10%] w-[45vw] h-[45vw] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="absolute top-[50%] left-[25%] w-[35vw] h-[35vw] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none"></div>
 
       {/* HEADER SECTION UTAMA */}
       <header className="text-center pt-24 pb-8 px-4 relative z-10 flex flex-col items-center">
@@ -166,9 +164,11 @@ export default function HalamanPortalYayasan() {
           ))}
         </section>
 
-        {/* SECTION 3: SEJARAH PUSAT YAYASAN */}
-        <section className="mt-20 grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
-          <div className="lg:col-span-3 bg-slate-800/20 border border-slate-800 rounded-3xl p-8 md:p-10 backdrop-blur-xs">
+        {/* SECTION 3 & 4: SEJARAH PUSAT YAYASAN & PILAR NILAI (BERTUMPUK KE BAWAH) */}
+        <section className="mt-20 space-y-12">
+          
+          {/* 1. KILAS SEJARAH (FULL KE BAWAH) */}
+          <div className="bg-slate-800/20 border border-slate-800 rounded-3xl p-8 md:p-10 backdrop-blur-xs">
             <span className="text-[10px] font-black uppercase text-indigo-400 tracking-widest bg-indigo-500/10 px-3 py-1 rounded-md border border-indigo-500/10">
               📜 Kilas Sejarah 
             </span>
@@ -179,7 +179,7 @@ export default function HalamanPortalYayasan() {
               <p>
                SEJARAH SINGKAT BERDIRINYA YAYASAN PENDIDIKAN ISLAM INSAN QUR`ANI DAN PONDOK PESANTREN JAMI`ATUL QUR`AN Awalnya, pada pertengahan tahun 2012, 
                diadakan pengajian al-Qur`an ba`da maghrib dengan meminjam Mushola Haji Utsman (Alm.), milik Ibu Mutammimah, dusun Sumbergambi Kidul, RT 003 RW 002, 
-               \desa Sonorejo, Kec. Grogol, Kab. Kediri yang waktu itu diikuti anak-anak kecil kurang lebih 15 anak. Lambat laun semakin bertambah santri. 
+               desa Sonorejo, Kec. Grogol, Kab. Kediri yang waktu itu diikuti anak-anak kecil kurang lebih 15 anak. Lambat laun semakin bertambah santri. 
                Maka pengelola berinisiatif untuk tidak hanya mengadakan pengajian al-Qur’an ba’da maghrib saja, tapi ditambah ba’da Ashar. Maka pengelola 
                bergerilya mengajak tetangga yang punya kemampuan membaca al-Qur’an untuk ikut nimbrung mengajar anak-anak yang jumlahnya semakin banyak. 
                Waktu itu yang direkrut sebagai ustadzah adalah ibu Binti, ibu Dewi, ibu Dziroh, Ibu Anis, ibu Rom, dan Ibu Lia. Pada tanggal 1 September 2012 
@@ -213,15 +213,15 @@ export default function HalamanPortalYayasan() {
             </div>
           </div>
 
-          {/* SECTION 4: PILAR NILAI UTAMA */}
-          <div className="lg:col-span-2 space-y-4">
-            <h3 className="text-sm font-black uppercase text-slate-300 tracking-wider pl-1">
+          {/* 2. PILAR NILAI UTAMA (BERDERET 3 DI BAWAH) */}
+          <div>
+            <h3 className="text-sm font-black uppercase text-slate-300 tracking-wider pl-1 mb-4">
               🎯 Pilar Nilai Utama
             </h3>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {visiMisi.map((item, index) => (
-                <div key={index} className="bg-slate-950/40 border border-slate-800/60 p-5 rounded-2xl flex gap-4 hover:border-slate-700/50 transition">
-                  <div className="text-xl font-black text-indigo-400/80 bg-indigo-500/5 border border-indigo-500/10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
+                <div key={index} className="bg-slate-950/40 border border-slate-800/60 p-5 rounded-2xl flex flex-col gap-3 hover:border-slate-700/50 transition">
+                  <div className="text-xl font-black text-indigo-400/85 bg-indigo-500/5 border border-indigo-500/10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
                     {item.poin}
                   </div>
                   <div>
@@ -232,6 +232,7 @@ export default function HalamanPortalYayasan() {
               ))}
             </div>
           </div>
+
         </section>
 
       </main>
