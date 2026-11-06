@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { upload } from '@vercel/blob/client'; // Import client SDK Vercel Blob
 
 export default function HalamanKelolaArtikel() {
   const [roleLembaga, setRoleLembaga] = useState("");
@@ -20,7 +21,6 @@ export default function HalamanKelolaArtikel() {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Fungsi Tarik Data dari Database MySQL lewat API
   const muatDaftarArtikel = async (slug) => {
     try {
       const res = await fetch(`/api/artikel?slug=${slug}`);
@@ -44,13 +44,10 @@ export default function HalamanKelolaArtikel() {
       setNamaAdmin(nama || "Admin");
       const slugAktif = role === "all" ? "sd" : role;
       setSlugLembaga(slugAktif);
-      
-      // Jalankan fungsi muat tabel pas halaman terbuka
       muatDaftarArtikel(role);
     }
   }, []);
 
-  // Handler Hapus Data (D)
   const handleHapusArtikel = async (id, judulArtikel) => {
     const yakin = confirm(`Ustadz/Ustadzah yakin mau menghapus berita: "${judulArtikel}"? Tindakan ini tidak bisa dibatalkan!`);
     if (!yakin) return;
@@ -59,7 +56,7 @@ export default function HalamanKelolaArtikel() {
       const res = await fetch(`/api/artikel?id=${id}`, { method: 'DELETE' });
       if (res.ok) {
         alert("Sukses! Artikel berhasil didelete dari mading.");
-        muatDaftarArtikel(roleLembaga); // Refresh tabel otomatis
+        muatDaftarArtikel(roleLembaga);
       } else {
         alert("Gagal menghapus data.");
       }
@@ -68,36 +65,39 @@ export default function HalamanKelolaArtikel() {
     }
   };
 
-  // Editor Command Utilities
   const eksekusiPerintah = (perintah, nilai = null) => {
     document.execCommand(perintah, false, nilai);
     editorRef.current?.focus();
   };
 
+  // UPLOAD GAMBAR SISIPAN KE VERCEL BLOB
   const handleUploadGambarFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append("aksi", "upload_gambar");
-    formData.append("image", file);
 
     try {
-      setStatusStatus({ tipe: "sukses", pesan: "Gambar lagi meluncur ke server... ⏳" });
-      const response = await fetch('/api/artikel', { method: 'POST', body: formData });
-      const hasil = await response.json();
-      if (response.ok && hasil.url) {
-        const imgHtml = `<img src="${hasil.url}" alt="Gambar" class="max-w-full h-auto rounded-2xl my-4 shadow-md mx-auto block" />`;
-        eksekusiPerintah("insertHTML", imgHtml);
-        setStatusStatus({ tipe: "sukses", pesan: "Gambar nangkring di lembar kerja! 🎉" });
-      }
+      setStatusStatus({ tipe: "sukses", pesan: "Gambar lagi meluncur ke Vercel Blob... ⏳" });
+      
+      // Upload langsung ke Vercel Blob
+      const blob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
+      });
+
+      // Sisipkan tag HTML <img> menggunakan URL dari Vercel Blob
+      const imgHtml = `<img src="${blob.url}" alt="Gambar Artikel" class="max-w-full h-auto rounded-2xl my-4 shadow-md mx-auto block" />`;
+      eksekusiPerintah("insertHTML", imgHtml);
+      
+      setStatusStatus({ tipe: "sukses", pesan: "Gambar nangkring di lembar kerja! 🎉" });
     } catch (err) {
-      setStatusStatus({ tipe: "gagal", pesan: "Gagal upload file komputer." });
+      console.error(err);
+      setStatusStatus({ tipe: "gagal", pesan: "Gagal upload gambar ke Vercel Blob." });
     } finally {
       e.target.value = "";
     }
   };
 
-  // Handler Create Data (C)
+  // SUBMIT ARTIKEL (KIRIM JSON BERISI KONTEN HTML KE API)
   const handleSubmitArtikelFinal = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -110,19 +110,25 @@ export default function HalamanKelolaArtikel() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("aksi", "simpan_artikel");
-    formData.append("slug_lembaga", slugLembaga);
-    formData.append("judul", judul);
-    formData.append("isi_artikel", isiKontenHTML);
-
     try {
-      const response = await fetch('/api/artikel', { method: 'POST', body: formData });
+      // Kirim JSON ke API backend lo
+      const response = await fetch('/api/artikel', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          aksi: "simpan_artikel",
+          slug_lembaga: slugLembaga,
+          judul: judul,
+          isi_artikel: isiKontenHTML,
+        })
+      });
+
       if (response.ok) {
         setJudul("");
-        setIsModalTerbuka(false); // Tutup pop up modal editor otomatis
+        if (editorRef.current) editorRef.current.innerHTML = "";
+        setIsModalTerbuka(false);
         alert("Alhamdulillah! Artikel berhasil diterbitkan! 🚀");
-        muatDaftarArtikel(roleLembaga); // Reload isi tabel utama
+        muatDaftarArtikel(roleLembaga);
       } else {
         setStatusStatus({ tipe: "gagal", pesan: "Gagal nembus database." });
       }
@@ -135,8 +141,6 @@ export default function HalamanKelolaArtikel() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col md:flex-row">
-      
-      {/* SIDEBAR */}
       <aside className="w-full md:w-64 bg-slate-950 p-6 border-r border-slate-800 flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-3 pb-6 border-b border-slate-800 mb-6">
@@ -160,14 +164,12 @@ export default function HalamanKelolaArtikel() {
         </button>
       </aside>
 
-      {/* WORKSPACE UTAMA: TABEL CRUD */}
       <main className="flex-1 p-6 md:p-10 max-w-5xl overflow-x-hidden">
         <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-2xl font-black text-white uppercase tracking-tight">Manajemen Artikel</h2>
             <p className="text-xs text-slate-400 mt-1">Daftar seluruh berita yang aktif tayang di halaman publik sekolah.</p>
           </div>
-          {/* TOMBOL PICU MODAL WORD */}
           <button 
             onClick={() => { setIsModalTerbuka(true); setStatusStatus({ tipe: "", pesan: "" }); }}
             className="bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs uppercase tracking-wider px-5 py-3.5 rounded-xl shadow-md cursor-pointer transition active:scale-95"
@@ -176,7 +178,6 @@ export default function HalamanKelolaArtikel() {
           </button>
         </header>
 
-        {/* DATA TABEL ARTIKEL NYATA */}
         <div className="bg-slate-950/50 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
@@ -226,13 +227,11 @@ export default function HalamanKelolaArtikel() {
         </div>
       </main>
 
-      {/* MODAL POP-UP EDITING MODEL WORD */}
       {isModalTerbuka && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs transition-all">
           <div className="absolute inset-0" onClick={() => setIsModalTerbuka(false)}></div>
           
           <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10 flex flex-col p-6 md:p-8">
-            
             <header className="flex justify-between items-center pb-4 border-b border-slate-800 mb-6">
               <div>
                 <h3 className="text-lg font-black text-white uppercase tracking-tight">Ketik Artikel Baru..!!</h3>
@@ -272,8 +271,6 @@ export default function HalamanKelolaArtikel() {
 
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Isi Konten Berita</label>
-                
-                {/* TOOLBAR */}
                 <div className="bg-slate-950 border border-slate-800 rounded-t-2xl p-3 flex flex-wrap gap-2 items-center">
                   <button type="button" onClick={() => eksekusiPerintah("bold")} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold">B</button>
                   <button type="button" onClick={() => eksekusiPerintah("italic")} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs italic">I</button>
@@ -287,7 +284,6 @@ export default function HalamanKelolaArtikel() {
                   <button type="button" onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600/30 rounded-lg text-xs font-bold">📸 Upload Foto</button>
                 </div>
 
-                {/* WORK SHEET */}
                 <div ref={editorRef} contentEditable className="w-full bg-slate-950 border-x border-b border-slate-800 rounded-b-2xl p-5 min-h-[300px] text-sm text-slate-200 outline-none focus:border-indigo-500/40 prose prose-invert max-w-none overflow-y-auto"></div>
               </div>
 
@@ -298,7 +294,6 @@ export default function HalamanKelolaArtikel() {
                 </button>
               </div>
             </form>
-
           </div>
         </div>
       )}
