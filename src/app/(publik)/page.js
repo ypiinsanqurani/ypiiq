@@ -30,7 +30,7 @@ export default function HalamanPortalYayasan() {
 
   const daftarSekolah = [
     {
-      nama: "TKIT Insan Qur'ani",
+      nama: "KBIT & TKIT Insan Qur'ani",
       slug: "tk",
       warnaLinear: "bg-linear-to-br from-cyan-400/90 to-blue-600/95 text-white shadow-cyan-500/20",
       warnaAksen: "border-cyan-200/40 bg-cyan-500/10 text-cyan-400",
@@ -62,7 +62,7 @@ export default function HalamanPortalYayasan() {
     { angka: "150+", label: "Total Siswa Aktif" },
     { angka: "20+", label: "Ustadz & ustadzah" },
     { angka: "45+", label: "Prestasi Tingkat Kota" },
-    { angka: "3", label: "Lembaga Terintegrasi" }
+    { angka: "4", label: "Lembaga Terintegrasi" }
   ];
 
   const visiMisi = [
