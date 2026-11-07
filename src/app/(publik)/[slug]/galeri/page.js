@@ -38,7 +38,7 @@ export default function HalamanPublikGaleri() {
   // Fungsi pembantu buat nampilin nama lembaga yang rapi
   const dapatkanNamaLembaga = (kodeSlug) => {
     if (kodeSlug === "sd") return "SDIT Insan Qurani";
-    if (kodeSlug === "tk") return "TKIT Insan Qurani";
+    if (kodeSlug === "tk") return "KBIT & TKIT Insan Qurani";
     if (kodeSlug === "smp") return "SMPIT Insan Qurani";
     return "Lembaga";
   };
