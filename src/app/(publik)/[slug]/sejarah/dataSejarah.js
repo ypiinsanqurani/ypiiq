@@ -2,9 +2,9 @@
 
 export const dataSejarahLembaga = {
   tk: {
-    judul: "Tentang TKIT",
-    subJudul: "Ayah dan Bunda, masa emas si kecil adalah waktu terbaik untuk menanamkan akhlak dan kecintaan pada Al-Qur'an. Di TKIT Insan Qur'ani, kami membantu ananda tumbuh menjadi generasi bertaqwa dengan cara yang menyenangkan!",
-    ringkasan: "Berawal dari beberapa ruangan kelas kecil, kini TKIT telah melahirkan ratusan generasi yang cinta masjid, mandiri, dan fasih hafalan Juz Amma.",
+    judul: "Tentang KBIT & TKIT",
+    subJudul: "Ayah dan Bunda, masa emas si kecil adalah waktu terbaik untuk menanamkan akhlak dan kecintaan pada Al-Qur'an. Di KBIT & TKIT Insan Qur'ani, kami membantu ananda tumbuh menjadi generasi bertaqwa dengan cara yang menyenangkan!",
+    ringkasan: "Berawal dari beberapa ruangan kelas kecil, kini KBIT & TKIT telah melahirkan ratusan generasi yang cinta masjid, mandiri, dan fasih hafalan Juz Amma.",
     milestones: [
       { tahun: "Program Unggulan", peristiwa: "Mengaji Metode Talaqqi." },
       { tahun: "Program Unggulan", peristiwa: "Hafalan Surat Pendek, Bacaan Sholat, Doa-doa Harian" },
